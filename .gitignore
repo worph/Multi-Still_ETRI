@@ -1,0 +1,7 @@
+/TOTAL
+/.idea
+__pycache__/
+*.pyc
+ckpt
+data
+result_all_model.csv
