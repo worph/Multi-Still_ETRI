@@ -1,9 +1,5 @@
-# Define variables
 $imageName = "nlp-server"
-$containerName = "nlp-dev-bash"
-
-# Get the current working directory
-$cwd = (Get-Location).Path
+$containerName = "nlp-server-dev"
 
 # Build the Docker image
 docker build -t $imageName .
@@ -15,5 +11,4 @@ if ($existingContainer) {
     docker rm $existingContainer
 }
 
-# Run the Docker container with the current directory mounted to /app
-docker run --rm -it --gpus all --name $containerName -v "${cwd}:/app" $imageName /bin/bash
+docker run --gpus all --name $containerName -p "5000:5000" $imageName
