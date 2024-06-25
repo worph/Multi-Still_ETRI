@@ -45,10 +45,10 @@ def predict_emotions(text):
     emotion_probabilities = outputs[0].tolist()
     #emotion_probabilities = outputs.max(dim=1)[1].tolist()
     #Create a map of emotion labels to probabilities
-    emotion_probabilities = {emotion: probability for emotion, probability in zip(emotion_labels, emotion_probabilities)}
+    emotion_probabilities = {emotion: round(probability, 3) for emotion, probability in zip(emotion_labels, emotion_probabilities)}
     #filter out the emotion that are above 0.1
     alpha = 0.01
-    emotion_probabilities = {emotion: probability for emotion, probability in emotion_probabilities.items() if probability > alpha}
+    emotion_probabilities = {emotion: round(probability, 3) for emotion, probability in emotion_probabilities.items() if probability > alpha}
 
     return emotion_probabilities
 
