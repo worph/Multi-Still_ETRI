@@ -71,26 +71,30 @@ class SpeechExtractorForCrossAttention():
 
         return extract_feature
 
-    def __call__(self,batch):
-
+    def __call__(self, batch):
         hidden_batch = torch.Tensor().to(self.args.cuda)
-        file_name = [data['file_name']+'.pt' for data in batch]
 
-        for data in file_name:
+        # Modified to handle both 'pt' and 'file_name' keys
+        for data in batch:
+            if 'pt' in data:
+                file_path = data['pt']  # Assuming 'pt' contains the full path
+            elif 'file_name' in data:
+                file_path = self.file_path + 'hidden_states/' + 'wav_' + data['file_name'] + '.pt'
+            else:
+                raise ValueError("Batch data must contain either 'pt' or 'file_name' keys.")
 
-            hidden = torch.load(self.file_path+'hidden_states/'+'wav_'+data,map_location=self.args.cuda)
-            #print(hidden.size())
+            hidden = torch.load(file_path, map_location=self.args.cuda)  # Load using the resolved path
             seq = hidden.size()[1]
             if seq > self.max_len:
                 # truncation
-                hidden = hidden[:,:self.max_len,:].to(self.args.cuda)
+                hidden = hidden[:, :self.max_len, :].to(self.args.cuda)
             elif seq < self.max_len:
                 # padding
-                pad = torch.Tensor([[[0]*1024]*(self.max_len-seq)]).to(self.args.cuda)
-                hidden = torch.cat([hidden,pad], dim=1)
+                pad = torch.Tensor([[[0] * 1024] * (self.max_len - seq)]).to(self.args.cuda)
+                hidden = torch.cat([hidden, pad], dim=1)
 
-            hidden_batch = torch.cat([hidden_batch,hidden],dim=0)
-        #print(hidden_batch.size())
+            hidden_batch = torch.cat([hidden_batch, hidden], dim=0)
+
         return hidden_batch
 
 
